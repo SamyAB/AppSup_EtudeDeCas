@@ -57,3 +57,24 @@ for (i in 1:length(Xqu)) {
   normalized_Xqu[,i] = tmp
 }
 
+################### Application de technique de classification supervisée ###################
+
+#On va séparer les donnnées en ensemble de train et de test 3/4 1/4
+train_xqu = normalized_Xqu[1:804,]
+train_yqu = Yqu$cartevpr[1:804]
+test_xqu = normalized_Xqu[805:1073,]
+test_yqu = Yqu$cartevpr[805:1073]
+
+#Tout d'abord un KNN
+library(class)
+best_k = 0
+best_KNN_acc = 0
+#On va faire varier le K de 1 à 50
+for (i in 1:50) {
+  tmp_knn = knn(train_xqu, test_xqu, cl = train_yqu, k = i)
+  tmp_acc = 1 - ( sum(tmp_knn != test_yqu) / length(test_yqu) )
+  if(tmp_acc > best_KNN_acc){
+    best_KNN_acc = tmp_acc
+    best_k = i
+  }
+}
