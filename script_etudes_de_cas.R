@@ -41,3 +41,11 @@ summary(Xqu)
 #Pour être sur d'être loin de 48 on prend le max de la variable càd 944
 Xqu[names(Xqu) == "agemvt"][is.na(Xqu[names(Xqu) == "agemvt"])] = 944
 
+#Pour les valeurs manquantes de nbpaiecb
+#On ne peut pas suivre le même raisonement que pour agemvt
+#Et que la variable est quantitative
+#On remplace les valeurs manquantes par la moyenne
+mean_nbpaiecb = mean(Xqu[,32], na.rm = TRUE)
+#Le na.rm permet de supprimer les valeurs manquante lors du calcul de la moyenne
+Xqu[names(Xqu) =="nbpaiecb"][is.na(Xqu[names(Xqu) == "nbpaiecb"])] = mean_nbpaiecb
+
