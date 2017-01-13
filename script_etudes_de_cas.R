@@ -49,3 +49,11 @@ mean_nbpaiecb = mean(Xqu[,32], na.rm = TRUE)
 #Le na.rm permet de supprimer les valeurs manquante lors du calcul de la moyenne
 Xqu[names(Xqu) =="nbpaiecb"][is.na(Xqu[names(Xqu) == "nbpaiecb"])] = mean_nbpaiecb
 
+#Normalisation des données
+#On va tenter une normalisation de toutes les données quantitatives entre 0 et 1
+normalized_Xqu = data.frame(Xqu)
+for (i in 1:length(Xqu)) {
+  tmp = ( Xqu[,i] - min(Xqu[,i]) )/( max(Xqu[,i])-min(Xqu[,i]) )
+  normalized_Xqu[,i] = tmp
+}
+
