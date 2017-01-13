@@ -34,3 +34,10 @@ summary(Xqu)
 #La variable agemvt contient 6 valeurs manquantes
 #La variable nbpaiecb contient 278 valeurs manquantes
 
+#Pour les valeurs manquantes de agemvt on remarque que pour avoir une carte premier visa
+#Les client doivent avoir agemvt <= 48 
+#On remarque que pour tous les clients ou la valeur de agemvt est manquante les clients n'ont pas de carte premier visa
+#On remplace donc les valeurs manquante par une valeur au dessus de 48 
+#Pour être sur d'être loin de 48 on prend le max de la variable càd 944
+Xqu[names(Xqu) == "agemvt"][is.na(Xqu[names(Xqu) == "agemvt"])] = 944
+
