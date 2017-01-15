@@ -98,6 +98,7 @@ for (i in 1:50) {
 best_KNN_acc
 best_k
 #Meilleur accuracy 0.802974 pour K = 10
+library(ROCR)
 
 #SVM
 library(e1071)
