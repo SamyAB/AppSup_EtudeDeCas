@@ -139,5 +139,4 @@ accurcy_nb_qu
 #Le modèle naif de bayse n'a qu'une précision de 75,46%
 #Courbe ROC de modèle bayésien naif
 roc_nb = prediction(as.numeric(nb_pred_qu),as.numeric(test_yqu))
-plot(performance(roc_nb, "tpr", "fpr"),main = "Courbe ROC de KNN")
-
+plot(performance(roc_nb, "tpr", "fpr"),main = "Courbe ROC du modèle bayésien naif")
