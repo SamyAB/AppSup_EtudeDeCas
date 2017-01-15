@@ -86,25 +86,38 @@ test_yqu = Yqu$cartevpr[805:1073]
 library(class)
 best_k = 0
 best_KNN_acc = 0
+best_KNN = NULL
 #On va faire varier le K de 1 à 50
 for (i in 1:50) {
-  tmp_knn = knn(train_xqu, test_xqu, cl = train_yqu, k = i)
+  tmp_knn = knn(train_xqu, test_xqu, cl = train_yqu, k = i,prob = TRUE)
   tmp_acc = 1 - ( sum(tmp_knn != test_yqu) / length(test_yqu) )
   if(tmp_acc > best_KNN_acc){
     best_KNN_acc = tmp_acc
+    best_KNN = tmp_knn
     best_k = i
   }
 }
 best_KNN_acc
 best_k
 #Meilleur accuracy 0.802974 pour K = 10
+#Dessin de la courbe roc
 library(ROCR)
+roc_knn = prediction(as.numeric(best_KNN),as.numeric(test_yqu))
+plot(performance(roc_knn, "tpr", "fpr"),main = "Courbe ROC de KNN")
 
 #SVM
 library(e1071)
 SVM_kernels = c("linear","polynomial","radial","sigmoid")
 result_svm = tune(svm, train.x = train_xqu, train.y = train_yqu, validation.x = test_xqu, validation.y = test_yqu, ranges = list(kernel = SVM_kernels, cost = c(0.001, 0.01, 0.1, 1,5,10,100)))
 #On obtient un précision de 88% kernel gaussien et cout de 1
+#Pour la courbe ROC de SVM
+svm_radial_1 = svm(train_yqu ~., data = train_xqu, kernel = "radial", cost = 1)
+svm_prediction = predict(svm_radial_1,test_xqu)
+roc_svm = prediction(as.numeric(svm_prediction),as.numeric(test_yqu))
+roc_svm
+plot(roc_svm,"tpr","fpr",main = "Courbe ROC de SVM") # Ne marche pas gentillement 
+#Plot ne veut pas le faire facilement, réalisation de la courbe de la manière forte
+plot(roc_svm@fp[[1]],roc_svm@tp[[1]], type = 'l',main = "Courbe ROC de SVM",xlab = "False positive rate",ylab = "True Positive rate")
 
 #LDA
 library(MASS)
@@ -113,6 +126,10 @@ lda_predict_qu = predict(lda_result_qu,test_xqu)
 accuracy_lda_qu = 1 - ( sum(lda_predict_qu$class != test_yqu) / length(test_yqu) )
 accuracy_lda_qu
 #La LDA obtient une précision de 81%
+#Courbe ROC de la LDA
+roc_lda = prediction(as.numeric(lda_predict_qu$class),as.numeric(test_yqu))
+plot(performance(roc_lda, "tpr", "fpr"),main = "Courbe ROC de LDA")
+
 
 #Baysien naif
 nb_qu = naiveBayes(as.factor(train_yqu) ~ ., data = train_xqu)
@@ -120,3 +137,7 @@ nb_pred_qu = predict(nb_qu, test_xqu) #Prédiction à l'aide du modèle pour le 
 accurcy_nb_qu = 1 - ( sum(nb_pred_qu != test_yqu) / length(test_yqu) )
 accurcy_nb_qu
 #Le modèle naif de bayse n'a qu'une précision de 75,46%
+#Courbe ROC de modèle bayésien naif
+roc_nb = prediction(as.numeric(nb_pred_qu),as.numeric(test_yqu))
+plot(performance(roc_nb, "tpr", "fpr"),main = "Courbe ROC de KNN")
+
