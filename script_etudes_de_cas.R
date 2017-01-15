@@ -113,3 +113,9 @@ accuracy_lda_qu = 1 - ( sum(lda_predict_qu$class != test_yqu) / length(test_yqu)
 accuracy_lda_qu
 #La LDA obtient une précision de 81%
 
+#Baysien naif
+nb_qu = naiveBayes(as.factor(train_yqu) ~ ., data = train_xqu)
+nb_pred_qu = predict(nb_qu, test_xqu) #Prédiction à l'aide du modèle pour le tester
+accurcy_nb_qu = 1 - ( sum(nb_pred_qu != test_yqu) / length(test_yqu) )
+accurcy_nb_qu
+#Le modèle naif de bayse n'a qu'une précision de 75,46%
