@@ -57,6 +57,23 @@ for (i in 1:length(Xqu)) {
   normalized_Xqu[,i] = tmp
 }
 
+#Maintenant on va à la recherche de coolinéarité
+#On utilise un critère de VIF et on essaye de supprimer les variables qui sont coolinéaires
+library(usdm)
+#On étudie les variables qui ont une correlation linéraire supperieure à 0.9 et on en enlève celles
+#Qui ont le plus grand VIF
+vifcor(normalized_Xqu,th = 0.9)
+#Ces variables sont mtbon nbbon mteparmo aveparfi moycred3 engageml
+coolinears = names(normalized_Xqu) %in% c("mtbon", "nbbon", "mteparmo", "aveparfi", "moycred3", "engageml")
+normalized_Xqu = normalized_Xqu[ !coolinears ]
+
+#vifstep fait une recherche des variables problèmatiques en enlenvant les variables une par une si elles ont un VIF > 10 (ici)
+#puis test les VIF et enlève celles qu'il voit
+vifstep(normalized_Xqu,th = 10)
+#Les variables à supprimer sont aveparmo nbeparmo avtscpte
+coolinears2 = names(normalized_Xqu) %in% c("aveparmo", "nbeparmo", "avtscpte")
+normalized_Xqu = normalized_Xqu[ !coolinears2 ]
+
 ################### Application de technique de classification supervisée ###################
 
 #On va séparer les donnnées en ensemble de train et de test 3/4 1/4
@@ -78,3 +95,21 @@ for (i in 1:50) {
     best_k = i
   }
 }
+best_KNN_acc
+best_k
+#Meilleur accuracy 0.802974 pour K = 10
+
+#SVM
+library(e1071)
+SVM_kernels = c("linear","polynomial","radial","sigmoid")
+result_svm = tune(svm, train.x = train_xqu, train.y = train_yqu, validation.x = test_xqu, validation.y = test_yqu, ranges = list(kernel = SVM_kernels, cost = c(0.001, 0.01, 0.1, 1,5,10,100)))
+#On obtient un précision de 88% kernel gaussien et cout de 1
+
+#LDA
+library(MASS)
+lda_result_qu = lda(train_xqu,train_yqu)
+lda_predict_qu = predict(lda_result_qu,test_xqu)
+accuracy_lda_qu = 1 - ( sum(lda_predict_qu$class != test_yqu) / length(test_yqu) )
+accuracy_lda_qu
+#La LDA obtient une précision de 81%
+
